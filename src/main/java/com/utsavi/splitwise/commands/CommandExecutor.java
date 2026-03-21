@@ -6,6 +6,7 @@ public class CommandExecutor {
   private List<Command> commands;
 
   public CommandExecutor(List<Command> commands){
+    commands.add(new RegisterUserCommand());
     this.commands = commands;
   }
 
@@ -23,5 +24,6 @@ public class CommandExecutor {
         command.execute(input);
       }
     }
+    System.out.println("Command not found !!! Please validate command");
   }
 }

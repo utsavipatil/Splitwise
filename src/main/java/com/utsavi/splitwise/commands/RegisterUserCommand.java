@@ -10,7 +10,8 @@ public class RegisterUserCommand implements Command{
 
   @Override
   public void execute(String input){
-    String[] words = input.split(" "); 
+    String[] words = input.split(" ");
+    System.out.println("Execute User Registration");
     //TODO: call controller
   }
 }

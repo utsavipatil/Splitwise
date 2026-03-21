@@ -27,6 +27,7 @@ public class SplitwiseApplication implements CommandLineRunner {
 			//parse input params
 			//call the right controller
 
+		System.out.println("Please enter command");
 		String input = scanner.nextLine();
 
 		commandExecutor.execute(input );
