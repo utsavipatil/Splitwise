@@ -9,6 +9,7 @@ import java.util.List;
 public class ConsecutiveSettleUpStrategy implements SettleUpStrategy{
   @Override
   public List<Transaction> settle(List<Expense> expenses) {
+
     return new ArrayList<>();
   }
 }
