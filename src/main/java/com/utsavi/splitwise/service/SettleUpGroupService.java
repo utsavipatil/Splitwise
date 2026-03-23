@@ -1,7 +1,7 @@
 package com.utsavi.splitwise.service;
 
-import com.utsavi.splitwise.dto.Transaction;
 import com.utsavi.splitwise.dto.SettleUpGroupResponseDto;
+import com.utsavi.splitwise.dto.Transaction;
 import com.utsavi.splitwise.enums.ResponseStatus;
 import com.utsavi.splitwise.model.Expense;
 import com.utsavi.splitwise.model.Group;
@@ -11,28 +11,27 @@ import com.utsavi.splitwise.repository.GroupRepository;
 import com.utsavi.splitwise.repository.UserRepository;
 import com.utsavi.splitwise.stratergy.SettleUpStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class SettleUpGroup {
+public class SettleUpGroupService {
 
-  private SettleUpStrategy settleUpStrategy;
+  private SettleUpStrategyFactory settleUpStrategyFactory;
   private UserRepository userRepository;
   private GroupRepository groupRepository;
   private ExpenseRepository expenseRepository;
 
   @Autowired
-  public SettleUpGroup(SettleUpStrategy settleUpStrategy, UserRepository userRepository, GroupRepository groupRepository, ExpenseRepository expenseRepository){
-    this.settleUpStrategy = settleUpStrategy;
+  public SettleUpGroupService(SettleUpStrategyFactory settleUpStrategyFactory, UserRepository userRepository, GroupRepository groupRepository, ExpenseRepository expenseRepository){
+    this.settleUpStrategyFactory = settleUpStrategyFactory;
     this.userRepository = userRepository;
     this.groupRepository = groupRepository;
     this.expenseRepository = expenseRepository;
   }
 
-  public SettleUpGroupResponseDto settleUpGroup(Long groupId){
+  public SettleUpGroupResponseDto settleUpGroup(Long groupId, String type){
     if(groupId == null){
       throw new RuntimeException("Group Invalid !!!");
     }
@@ -42,6 +41,7 @@ public class SettleUpGroup {
       Group group = groupRepository.findById(groupId).orElseThrow(() -> new RuntimeException("Group not found"));
       List<Expense> groupExpenses = group.getExpenses();
 
+      SettleUpStrategy settleUpStrategy = settleUpStrategyFactory.getStrategy(type);
       List<Transaction> transactions = settleUpStrategy.settle(groupExpenses);
 
       return SettleUpGroupResponseDto.builder()
@@ -55,7 +55,7 @@ public class SettleUpGroup {
     }
   }
 
-  public SettleUpGroupResponseDto settleUpUser(Long userId){
+  public SettleUpGroupResponseDto settleUpUser(Long userId, String type){
     if(userId == null){
       throw new RuntimeException("User Invalid !!!");
     }
@@ -63,6 +63,7 @@ public class SettleUpGroup {
     try{
       User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
       List<Expense> userExpenses = expenseRepository.findAllByPaidByUsersOrPaidForUsers(user);
+      SettleUpStrategy settleUpStrategy = settleUpStrategyFactory.getStrategy(type);
       List<Transaction> transactions = settleUpStrategy.settle(userExpenses);
 
       return SettleUpGroupResponseDto.builder()

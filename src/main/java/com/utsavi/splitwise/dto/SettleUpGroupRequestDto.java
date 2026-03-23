@@ -9,4 +9,5 @@ import lombok.Getter;
 @Builder
 public class SettleUpGroupRequestDto {
   private Long groupId;
+  private String settUpType;
 }
